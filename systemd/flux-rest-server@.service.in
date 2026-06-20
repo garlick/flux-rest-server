@@ -1,0 +1,17 @@
+[Unit]
+Description=flux-rest-server for user %i
+
+[Service]
+# systemd performs the privileged setuid to the user.
+User=%i
+# The server inherits the listening socket via $LISTEN_FDS (socket activation);
+# no --host/--port needed. --allow-user restricts connections to the web-server
+# account (configure --with-web-user), verified via SO_PEERCRED. flux.Flux()
+# connects to the system instance as the user. If it cannot find the instance
+# automatically, uncomment and adjust:
+# Environment=FLUX_URI=local:///run/flux/local
+# --idle-timeout reaps the per-user server after this long (a Flux standard
+# duration) with no connection; systemd re-activates it on the next request.
+# Raise it, or use "infinity" to disable.
+ExecStart=/usr/bin/flux rest-server --allow-user=@WEB_USER@ --idle-timeout=5m
+NoNewPrivileges=true

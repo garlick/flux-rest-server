@@ -6,6 +6,11 @@
 /configure
 Makefile
 Makefile.in
+/systemd/flux-rest-server@.service
+/systemd/flux-rest-server@.socket
+/systemd/flux-rest-server-ensure.service
+/systemd/flux-rest-server-ensure.socket
+/polkit/50-flux-rest-server.rules
 .deps/
 .dirstamp
 

@@ -1,0 +1,34 @@
+# Example front end. Terminates TLS, authenticates the user, ensures the user's
+# flux-rest-server is running, and proxies to its per-user socket. Adjust the
+# auth method, nginx user/group, hostname, and cert paths for your site.
+server {
+    listen 443 ssl;
+    server_name HOSTNAME;
+
+    ssl_certificate     /etc/pki/tls/certs/site.crt;
+    ssl_certificate_key /etc/pki/tls/private/site.key;
+
+    # --- site authentication: pick ONE; it must set $remote_user ---
+    # auth_gss on;                                            # Kerberos
+    # auth_basic "flux"; auth_basic_user_file /etc/flux/htpasswd;   # testing
+
+    location /api/ {
+        # Reject anything that isn't a plain username before using it in a path.
+        if ($remote_user !~ "^[a-z_][a-z0-9_-]*$") { return 403; }
+
+        auth_request /_ensure;                       # bring the user's socket up
+        set $sock /run/flux-rest-server/$remote_user.sock;
+        proxy_pass http://unix:$sock:/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
+    # Internal helper that ensures the user's flux-rest-server socket is started.
+    # Runs as nginx user, authorized by polkit to start flux-rest-server@ units.
+    location = /_ensure {
+        internal;
+        proxy_pass http://unix:/run/flux-rest-server/ensure.sock;
+        proxy_method GET;
+        proxy_set_header X-Remote-User $remote_user;
+    }
+}

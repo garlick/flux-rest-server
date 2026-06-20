@@ -1,0 +1,11 @@
+[Unit]
+Description=flux-rest-server-ensure service for nginx
+Requires=flux-rest-server-ensure.socket
+
+[Service]
+# Runs as the web-server user and calls systemctl to start user sockets.
+# Authorized via the polkit rule. Account set by configure --with-web-user.
+User=@WEB_USER@
+ExecStart=@fluxlibexecdir@/flux-rest-server-ensure.py
+StandardError=journal
+NoNewPrivileges=true

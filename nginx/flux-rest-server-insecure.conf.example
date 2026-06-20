@@ -1,0 +1,38 @@
+# INSECURE example -- for local testing ONLY. Do NOT use in production.
+#
+# Plain HTTP (no TLS) with HTTP Basic auth: the password is sent in clear text
+# and there is no transport encryption. For a real deployment use
+# flux-rest-server.conf.example instead (TLS + a site auth method).
+#
+# nginx must run as the web-server account the package was built for (www-data
+# on Debian). The Basic-auth username must be a real local user, since the
+# per-user service runs as that user. Create the password file with e.g.:
+#
+#   sudo htpasswd -c /etc/nginx/flux.htpasswd $USER
+#
+server {
+    listen 8080;                       # plain HTTP, no TLS
+    server_name localhost;
+
+    auth_basic "flux (insecure test)";
+    auth_basic_user_file /etc/nginx/flux.htpasswd;
+
+    location /api/ {
+        # Reject anything that isn't a plain username before using it in a path.
+        if ($remote_user !~ "^[a-z_][a-z0-9_-]*$") { return 403; }
+
+        auth_request /_ensure;                       # bring the user's socket up
+        set $sock /run/flux-rest-server/$remote_user.sock;
+        proxy_pass http://unix:$sock:/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
+    # Internal helper that ensures the user's flux-rest-server socket is started.
+    location = /_ensure {
+        internal;
+        proxy_pass http://unix:/run/flux-rest-server/ensure.sock;
+        proxy_method GET;
+        proxy_set_header X-Remote-User $remote_user;
+    }
+}

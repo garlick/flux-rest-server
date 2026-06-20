@@ -1,0 +1,15 @@
+[Unit]
+Description=flux-rest-server-ensure socket for nginx auth_request
+
+[Socket]
+# nginx connects here to ensure user sockets are started
+ListenStream=/run/flux-rest-server/ensure.sock
+SocketUser=root
+# web-server group (configure --with-web-group)
+SocketGroup=@WEB_GROUP@
+SocketMode=0660
+# Parent dir /run/flux-rest-server: search-only so other users cannot enumerate.
+DirectoryMode=0711
+
+[Install]
+WantedBy=sockets.target

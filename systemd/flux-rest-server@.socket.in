@@ -1,0 +1,19 @@
+[Unit]
+Description=flux-rest-server socket for user %i
+
+[Socket]
+# Per-user listening socket. systemd creates it (and the parent directory) and
+# activates the matching flux-rest-server@%i.service on first connection
+# (Accept=no, the default).
+ListenStream=/run/flux-rest-server/%i.sock
+SocketUser=root
+# SocketGroup is the web-server group (configure --with-web-group); 0660 lets
+# only the web server (and root) connect.
+SocketGroup=@WEB_GROUP@
+SocketMode=0660
+# Parent dir /run/flux-rest-server: search-only (0711) so the web server can
+# reach a known socket path but other users cannot enumerate active sessions.
+DirectoryMode=0711
+
+[Install]
+WantedBy=sockets.target

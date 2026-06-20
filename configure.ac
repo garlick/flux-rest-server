@@ -17,6 +17,21 @@ AX_FLUX_CORE
 # default is prefix-relative so distcheck installs under its own prefix.
 RRA_WITH_SYSTEMD_UNITDIR
 
+# Account/group the web server (nginx) fronting this service runs as.  Used to
+# authorize the _ensure helper via polkit and to group-restrict the per-user
+# sockets so only the web server may connect.  Defaults match Debian/Ubuntu;
+# pass e.g. --with-web-user=nginx on RHEL/Fedora.
+AC_ARG_WITH([web-user],
+    [AS_HELP_STRING([--with-web-user=USER],
+        [account the web server runs as @<:@default=www-data@:>@])],
+    [web_user=$withval], [web_user=www-data])
+AC_ARG_WITH([web-group],
+    [AS_HELP_STRING([--with-web-group=GROUP],
+        [group permitted to connect to the sockets @<:@default=web-user@:>@])],
+    [web_group=$withval], [web_group=$web_user])
+AC_SUBST([WEB_USER], [$web_user])
+AC_SUBST([WEB_GROUP], [$web_group])
+
 # Our flux subcommand and libexec helper must live in flux-core's command and
 # libexec directories for `flux rest-server` to resolve them. flux-core uses
 # $libexecdir/flux[/cmd], so we use the same formula, honoring --prefix /
@@ -35,6 +50,11 @@ AC_SUBST(fluxlibexecdir)
 AC_CONFIG_FILES([
   Makefile
   t/Makefile
+  systemd/flux-rest-server@.service
+  systemd/flux-rest-server@.socket
+  systemd/flux-rest-server-ensure.service
+  systemd/flux-rest-server-ensure.socket
+  polkit/50-flux-rest-server.rules
 ])
 
 AC_OUTPUT
