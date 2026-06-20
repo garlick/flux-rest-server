@@ -1,0 +1,30 @@
+# Autotools
+/autom4te.cache/
+/config/
+/config.log
+/config.status
+/configure
+Makefile
+Makefile.in
+.deps/
+.dirstamp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+venv/
+
+# Build artifacts
+debbuild/
+*.tar.gz
+
+# Tests
+.pytest_cache/
+
+# Editor files
+*.swp
+*~
