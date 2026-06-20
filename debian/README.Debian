@@ -1,0 +1,14 @@
+flux-rest-server for Debian
+----------------------------
+
+This package provides a minimal REST/HTTP front-end for Flux.
+
+The systemd unit templates are installed but not enabled by default.
+See /usr/share/doc/flux-rest-server/examples/ for nginx configuration.
+
+Per-user deployment requires:
+1. Starting the socket unit: systemctl start flux-rest-server@USER.socket
+2. Configuring nginx with the example configuration
+3. The polkit rule (installed automatically) allows nginx to start user services
+
+For more information, see README.md and REST_API.md in the source package.

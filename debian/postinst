@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+# Run debhelper-generated code, filtering harmless socket-activation warnings
+# Preserve the exit status so real errors still cause failure
+_status=0
+{
+#DEBHELPER#
+} 2>&1 | grep -Ev "(is a disabled or a static unit|Could not execute systemctl.*deb-systemd-invoke)" >&2 || _status=$?
+
+# grep exits 1 if it filtered all output (success case); preserve actual failures
+[ $_status -eq 0 -o $_status -eq 1 ] || exit $_status
+
+exit 0

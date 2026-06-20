@@ -1,0 +1,19 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- --with-systemdsystemunitdir=/lib/systemd/system
+
+override_dh_autoreconf:
+	@echo not running autogen.sh on dist product
+
+override_dh_installsystemd:
+	# Template services are socket-activated, don't auto-enable them
+	dh_installsystemd --no-enable --no-start --name=flux-rest-server@
+	dh_installsystemd --no-enable --no-start --name=flux-rest-server-ensure flux-rest-server-ensure.service
+	# Only the ensure socket should be enabled/started
+	dh_installsystemd --name=flux-rest-server-ensure flux-rest-server-ensure.socket
+	# Note: deb-systemd-invoke may warn about .service units being disabled/static.
+	# This is expected for socket-activated services and can be ignored.

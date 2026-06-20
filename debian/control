@@ -1,0 +1,22 @@
+Source: flux-rest-server
+Section: devel
+Priority: optional
+Maintainer: Jim Garlick <garlick@llnl.gov>
+Standards-Version: 4.1.2
+Build-Depends:
+  debhelper (>= 10),
+  autoconf,
+  automake,
+  python3,
+  flux-core
+
+Homepage: https://github.com/flux-framework/flux-rest-server
+Package: flux-rest-server
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}, flux-core
+Description: Minimal REST/HTTP front-end for Flux
+ A minimal, stdlib-only HTTP front-end for Flux. Provides read-only
+ JSON endpoints for basic Flux instance information.
+ .
+ This package includes systemd socket activation support for per-user
+ service deployment.

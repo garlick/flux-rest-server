@@ -15,6 +15,12 @@ systemdsystemunit_DATA = \
 endif
 
 
+deb: debian scripts/debbuild.sh
+	@$(top_srcdir)/scripts/debbuild.sh $(abs_top_srcdir)
+
+clean-local:
+	@rm -rf debbuild
+
 polkitdir = $(sysconfdir)/polkit-1/rules.d
 polkit_DATA = polkit/50-flux-rest-server.rules
 
