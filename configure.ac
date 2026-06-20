@@ -1,0 +1,39 @@
+AC_PREREQ([2.63])
+AC_INIT([flux-rest-server],
+        m4_esyscmd([test -n "$FLUX_REST_SERVER_VERSION" && printf $FLUX_REST_SERVER_VERSION || git describe --always | awk '/.*/ {sub(/^v/, ""); printf "%s",$1; exit}']))
+AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_MACRO_DIR([config])
+AC_CONFIG_SRCDIR([README.md])
+
+AM_INIT_AUTOMAKE([foreign])
+AM_SILENT_RULES([yes])
+
+AC_PROG_INSTALL
+AM_PATH_PYTHON([3.8])
+
+AX_FLUX_CORE
+
+# systemd unit directory (--with-systemdsystemunitdir) + HAVE_SYSTEMD; the
+# default is prefix-relative so distcheck installs under its own prefix.
+RRA_WITH_SYSTEMD_UNITDIR
+
+# Our flux subcommand and libexec helper must live in flux-core's command and
+# libexec directories for `flux rest-server` to resolve them. flux-core uses
+# $libexecdir/flux[/cmd], so we use the same formula, honoring --prefix /
+# --libexecdir (configure with the same values as flux-core; the Debian package
+# does this automatically via dh's multiarch --libexecdir).
+fluxcmddir=$libexecdir/flux/cmd
+fluxlibexecdir=$libexecdir/flux
+# Fully expand ${prefix}/${exec_prefix} so these can be substituted as absolute
+# paths into non-Makefile files (e.g. the systemd unit ExecStart); config.status
+# does not expand make-time variables.
+adl_RECURSIVE_EVAL([$fluxcmddir], [fluxcmddir])
+adl_RECURSIVE_EVAL([$fluxlibexecdir], [fluxlibexecdir])
+AC_SUBST(fluxcmddir)
+AC_SUBST(fluxlibexecdir)
+
+AC_CONFIG_FILES([
+  Makefile
+])
+
+AC_OUTPUT
