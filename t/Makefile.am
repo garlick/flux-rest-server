@@ -10,7 +10,9 @@ clean-local:
 	rm -fr trash-directory.* test-results .prove *.broker.log *.output
 
 TESTS = \
-	t0000-sharness.t
+	t0000-sharness.t \
+	t1000-basic.t \
+	t1001-security.t
 
 EXTRA_DIST = \
 	$(TESTS) \
