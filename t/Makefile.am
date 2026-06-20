@@ -1,0 +1,18 @@
+AM_TESTS_ENVIRONMENT = \
+	export SHARNESS_BUILD_DIRECTORY="$(abs_top_builddir)";\
+	export SHARNESS_TEST_SRCDIR="$(abs_top_srcdir)/t";
+
+TEST_EXTENSIONS = .t
+T_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
+	$(top_srcdir)/config/tap-driver.sh
+
+clean-local:
+	rm -fr trash-directory.* test-results .prove *.broker.log *.output
+
+TESTS = \
+	t0000-sharness.t
+
+EXTRA_DIST = \
+	$(TESTS) \
+	sharness.sh \
+	sharness.d

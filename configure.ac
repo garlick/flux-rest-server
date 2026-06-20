@@ -34,6 +34,7 @@ AC_SUBST(fluxlibexecdir)
 
 AC_CONFIG_FILES([
   Makefile
+  t/Makefile
 ])
 
 AC_OUTPUT

@@ -1,4 +1,4 @@
-SUBDIRS =
+SUBDIRS = t
 
 EXTRA_DIST = \
 	config/tap-driver.sh \
