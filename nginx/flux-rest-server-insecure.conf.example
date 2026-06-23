@@ -1,5 +1,10 @@
 # INSECURE example -- for local testing ONLY. Do NOT use in production.
 #
+# This is an nginx SERVER BLOCK -- install it inside the http{} context, e.g.
+#   sudo cp <this file> /etc/nginx/conf.d/flux-rest-server.conf
+#   sudo nginx -t && sudo systemctl reload nginx
+# Do NOT replace /etc/nginx/nginx.conf with it (a bare server{} there is invalid).
+#
 # Plain HTTP (no TLS) with HTTP Basic auth: the password is sent in clear text
 # and there is no transport encryption. For a real deployment use
 # flux-rest-server.conf.example instead (TLS + a site auth method).

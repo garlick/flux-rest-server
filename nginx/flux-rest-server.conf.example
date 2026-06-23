@@ -1,3 +1,8 @@
+# This is an nginx SERVER BLOCK -- install it inside the http{} context, e.g.
+#   sudo cp <this file> /etc/nginx/conf.d/flux-rest-server.conf
+#   sudo nginx -t && sudo systemctl reload nginx
+# Do NOT replace /etc/nginx/nginx.conf with it (a bare server{} there is invalid).
+#
 # Example front end. Terminates TLS, authenticates the user, ensures the user's
 # flux-rest-server is running, and proxies to its per-user socket. Adjust the
 # auth method, nginx user/group, hostname, and cert paths for your site.
