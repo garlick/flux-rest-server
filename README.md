@@ -133,20 +133,24 @@ to start `flux-rest-server@` units), and it enables
    `FLUX_URI` in `/lib/systemd/system/flux-rest-server@.service` (see the
    commented example there).
 
-3. **Configure nginx** as the front end. Two example configs are installed under
-   `examples/` in the package docs (e.g.
+3. **Configure nginx** as the front end. Three example configs are installed
+   under `examples/` in the package docs (e.g.
    `/usr/share/doc/flux-rest-server/examples/`):
 
    - `flux-rest-server.conf.example` — production: TLS plus a site auth method
      (Kerberos/LDAP/mTLS). Set your hostname, certificate paths, and an auth
      method that populates `$remote_user`.
+   - `flux-rest-server-proxy.conf.example` — behind a **trusted upstream proxy**
+     (e.g. LC Wormhole) that has already authenticated the user: mutual TLS
+     verifies the proxy, and the user it asserts is mapped to the per-user
+     socket.
    - `flux-rest-server-insecure.conf.example` — **local testing only**: plain
      HTTP with HTTP Basic auth, no TLS (see the warning at the top of the file).
 
-   Both proxy `/api/` to the per-user socket and gate it with an `auth_request`
-   to the `_ensure` helper; they differ only in TLS and auth method. nginx must
-   run as the web-server account the package was built for (`www-data` on
-   Debian).
+   All proxy `/api/` to the per-user socket and gate it with an `auth_request`
+   to the `_ensure` helper; they differ only in how `$remote_user` is
+   established. nginx must run as the web-server account the package was built
+   for (`www-data` on Debian).
 
 The `_ensure` helper (`flux-rest-server-ensure.socket`, listening at
 `/run/flux-rest-server/ensure.sock`) is already enabled by the package. When
