@@ -27,6 +27,7 @@ polkit_DATA = polkit/50-flux-rest-server.rules
 docexampledir = $(docdir)/examples
 docexample_DATA = \
 	nginx/flux-rest-server.conf.example \
+	nginx/flux-rest-server-proxy.conf.example \
 	nginx/flux-rest-server-insecure.conf.example
 
 EXTRA_DIST = \

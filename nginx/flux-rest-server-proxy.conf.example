@@ -1,0 +1,57 @@
+# Example: flux-rest-server behind a TRUSTED UPSTREAM PROXY (e.g. LC Wormhole).
+#
+# Use this when an upstream proxy has already authenticated the end user with
+# the site's native mechanism (bearer token, OAuth, ...) and forwards the
+# request, asserting the user in a header. This nginx authenticates *the proxy*
+# so the assertion can be trusted, then maps the asserted user to the per-user
+# socket. flux-rest-server itself stays auth-agnostic.
+#
+# TRUST MODEL (important): an asserted-identity header is only safe if the hop
+# carrying it is authenticated -- otherwise any client could spoof it. This is
+# the cross-host analog of the local SO_PEERCRED check the server already does.
+# Here we authenticate the proxy with mutual TLS: only a proxy holding a cert
+# signed by the trusted CA can connect, so only its headers are honored, and an
+# unauthenticated client cannot reach this listener at all. (A locked-down
+# source-address ACL on an isolated network is an alternative anchor.) Do NOT
+# also expose this backend on any path where a client could inject the header.
+#
+# Adjust: hostname, cert paths, the trusted-proxy CA, and the header name to
+# match what your proxy actually sends (X-Remote-User here).
+server {
+    listen 443 ssl;
+    server_name flux.example.com;
+
+    # Server TLS presented to the proxy.
+    ssl_certificate     /etc/pki/tls/certs/site.crt;
+    ssl_certificate_key /etc/pki/tls/private/site.key;
+
+    # Authenticate the upstream proxy: require a client certificate signed by
+    # the proxy's CA. This is what makes the asserted user trustworthy.
+    ssl_client_certificate /etc/pki/tls/certs/trusted-proxy-ca.crt;
+    ssl_verify_client      on;
+
+    location /api/ {
+        # Defensive: reject anything whose client cert did not verify.
+        if ($ssl_client_verify != SUCCESS) { return 403; }
+
+        # User asserted by the (now-authenticated) proxy. Read it into our own
+        # variable and sanitize before using it in a socket path. An empty or
+        # malformed value is rejected.
+        set $fluxuser $http_x_remote_user;
+        if ($fluxuser !~ "^[a-z_][a-z0-9_-]*$") { return 403; }
+
+        auth_request /_ensure;                       # bring the user's socket up
+        set $sock /run/flux-rest-server/$fluxuser.sock;
+        proxy_pass http://unix:$sock:/;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
+    # Internal helper that ensures the user's flux-rest-server socket is started.
+    location = /_ensure {
+        internal;
+        proxy_pass http://unix:/run/flux-rest-server/ensure.sock;
+        proxy_method GET;
+        proxy_set_header X-Remote-User $fluxuser;
+    }
+}
