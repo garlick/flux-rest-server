@@ -152,6 +152,16 @@ to start `flux-rest-server@` units), and it enables
    established. nginx must run as the web-server account the package was built
    for (`www-data` on Debian).
 
+   Each is an nginx **`server` block**, so install it inside the `http{}`
+   context — not as `nginx.conf` (a bare `server{}` there is invalid). On Debian
+   the stock `nginx.conf` includes `conf.d/*.conf`, so:
+
+   ```sh
+   sudo cp /usr/share/doc/flux-rest-server/examples/flux-rest-server-insecure.conf.example \
+           /etc/nginx/conf.d/flux-rest-server.conf
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+
 The `_ensure` helper (`flux-rest-server-ensure.socket`, listening at
 `/run/flux-rest-server/ensure.sock`) is already enabled by the package. When
 nginx makes an `auth_request` to `/_ensure`, the helper starts that user's
