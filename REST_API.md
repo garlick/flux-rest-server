@@ -131,7 +131,7 @@ location /api/ {
     if ($remote_user !~ "^[a-z_][a-z0-9_-]*$") { return 403; }   # sanitize
     auth_request /_ensure;                       # start the user's socket
     set $sock /run/flux-rest-server/$remote_user.sock;
-    proxy_pass http://unix:$sock:/;
+    proxy_pass http://unix:$sock:$request_uri;
     proxy_http_version 1.1;
     proxy_set_header Connection "";
 }
