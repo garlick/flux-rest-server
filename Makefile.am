@@ -35,6 +35,10 @@ EXTRA_DIST = \
 	README.md \
 	LICENSE \
 	NOTICE.LLNS \
+	src/test/docker/docker-run-checks.sh \
+	src/test/docker/Dockerfile \
+	src/test/checks_run.sh \
+	src/test/checks-lib.sh \
 	systemd/flux-rest-server@.service.in \
 	systemd/flux-rest-server@.socket.in \
 	systemd/flux-rest-server-ensure.service.in \

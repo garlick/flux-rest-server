@@ -18,4 +18,5 @@ TESTS = \
 EXTRA_DIST = \
 	$(TESTS) \
 	sharness.sh \
-	sharness.d
+	sharness.d \
+	scripts/run_timeout.py
