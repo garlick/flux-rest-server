@@ -39,6 +39,7 @@ EXTRA_DIST = \
 	src/test/docker/Dockerfile \
 	src/test/checks_run.sh \
 	src/test/checks-lib.sh \
+	src/test/checks-annotate.sh \
 	systemd/flux-rest-server@.service.in \
 	systemd/flux-rest-server@.socket.in \
 	systemd/flux-rest-server-ensure.service.in \

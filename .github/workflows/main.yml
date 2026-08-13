@@ -88,3 +88,6 @@ jobs:
         -j $(nproc)
         -i ${{ matrix.image }}
         --
+    - name: annotate errors
+      if: failure() || cancelled()
+      run: src/test/checks-annotate.sh
