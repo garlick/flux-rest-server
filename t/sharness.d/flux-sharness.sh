@@ -1,6 +1,12 @@
 # Minimal flux-sharness for flux-rest-server
 
-export FLUX_EXEC_PATH_PREPEND="${SHARNESS_TEST_SRCDIR}/scripts":"${SHARNESS_TEST_SRCDIR}/../src/cmd"
+# Point `flux rest-server` at the in-tree subcommand for normal build-tree
+# testing.  In installed-test mode (FLUX_TEST_INSTALLED_PATH set) leave the
+# exec path alone so flux resolves the *installed* subcommand from its command
+# directory instead of the source tree.
+if test -z "$FLUX_TEST_INSTALLED_PATH"; then
+    export FLUX_EXEC_PATH_PREPEND="${SHARNESS_TEST_SRCDIR}/scripts":"${SHARNESS_TEST_SRCDIR}/../src/cmd"
+fi
 
 # Simple test_under_flux that just re-execs under flux start
 test_under_flux() {
